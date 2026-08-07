@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image → DXF Converter | CAD-Ready Vector Export</title>
+  <meta name="description" content="Convert 2D images and 3D depth maps to professional DXF files for AutoCAD, FreeCAD, and CNC workflows. Fast, free, and browser-based."/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔷</text></svg>" />
+</head>
+<body>
+
+  <!-- Animated Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="bg-grid"></div>
+
+  <div class="app-wrapper">
+
+    <!-- ── HEADER ─────────────────────────────────────── -->
+    <header>
+      <div class="logo-badge">
+        <span class="dot"></span>
+        Image to DXF Converter
+      </div>
+      <h1>Convert Images<br/>to DXF Format</h1>
+      <p class="subtitle">
+        Transform 2D raster images and 3D depth maps into precision vector
+        DXF files ready for AutoCAD, FreeCAD, laser cutters &amp; CNC machines.
+      </p>
+    </header>
+
+    <!-- ── MODE TOGGLE ────────────────────────────────── -->
+    <div class="mode-toggle" role="group" aria-label="Conversion mode">
+      <button class="mode-btn active" id="mode-2d" aria-pressed="true">
+        <span class="mode-icon">🖼️</span> 2D Image
+      </button>
+      <button class="mode-btn" id="mode-3d" aria-pressed="false">
+        <span class="mode-icon">🧊</span> 3D Depth Map
+      </button>
+    </div>
+
+    <!-- ── MAIN GRID ───────────────────────────────────── -->
+    <div class="main-grid">
+
+      <!-- Left: Upload + Preview -->
+      <div>
+
+        <!-- Upload Card -->
+        <div class="card" style="margin-bottom:24px">
+          <div class="card-header">
+            <div class="card-icon purple">📤</div>
+            <h2>Upload Image</h2>
+          </div>
+
+          <!-- Drop Zone -->
+          <div id="drop-zone" role="button" tabindex="0" aria-label="Upload image by clicking or dragging">
+            <span class="dz-icon">🖼️</span>
+            <p class="dz-title">Drop your image here or click to browse</p>
+            <p class="dz-subtitle">You can also paste an image with <kbd>Ctrl+V</kbd></p>
+            <div class="dz-formats">
+              <span class="fmt-badge">PNG</span>
+              <span class="fmt-badge">JPG</span>
+              <span class="fmt-badge">BMP</span>
+              <span class="fmt-badge">TIFF</span>
+              <span class="fmt-badge">WebP</span>
+              <span class="fmt-badge">GIF</span>
+            </div>
+          </div>
+          <input type="file" id="file-input" accept="image/*" />
+
+          <!-- Preview -->
+          <div id="preview-area">
+            <img id="preview-img" src="" alt="Image preview" />
+            <div class="preview-overlay">
+              <button class="preview-btn" id="clear-btn">✕ Clear</button>
+            </div>
+            <div class="file-info">
+              <span class="file-name" id="file-name">—</span>
+              <span class="file-size" id="file-size">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status / Result -->
+        <div id="status-section">
+          <div id="status-card" class="status-card processing">
+            <div class="status-icon" id="status-icon">⚙️</div>
+            <div class="status-body">
+              <div class="status-title" id="status-title">Processing…</div>
+              <div class="status-msg"  id="status-msg">Please wait.</div>
+              <div id="progress-bar-wrap">
+                <div id="progress-bar"></div>
+              </div>
+            </div>
+            <button id="download-btn" aria-label="Download DXF file">
+              ⬇ Download DXF
+            </button>
+          </div>
+        </div>
+
+        <!-- Convert Button -->
+        <button id="convert-btn" style="margin-top:24px;" aria-label="Start conversion">
+          <div class="btn-spinner"></div>
+          <span class="btn-text">⚡ Convert to DXF</span>
+        </button>
+
+        <!-- Features Row -->
+        <div class="features">
+          <div class="feature-pill"><span>🎯</span> AutoCAD Compatible</div>
+          <div class="feature-pill"><span>⚙️</span> CNC Ready</div>
+          <div class="feature-pill"><span>🔓</span> Open Format</div>
+          <div class="feature-pill"><span>🏗️</span> Multi-Layer Export</div>
+          <div class="feature-pill"><span>🔒</span> Processed Locally</div>
+        </div>
+      </div>
+
+      <!-- Right: Settings Panel -->
+      <div class="card" id="settings-panel" data-mode="2d">
+        <div class="card-header">
+          <div class="card-icon cyan">⚙️</div>
+          <h2>Settings</h2>
+        </div>
+        <div class="settings-scroll">
+
+          <!-- DXF Version -->
+          <div class="setting-group">
+            <div class="setting-label">DXF Version</div>
+            <select id="dxf-version" aria-label="DXF version">
+              <option value="R2010" selected>R2010 (Recommended)</option>
+              <option value="R2000">R2000</option>
+              <option value="R12">R12 (Legacy / CNC)</option>
+            </select>
+          </div>
+
+          <!-- ══ 2D SETTINGS ══════════════════════════ -->
+          <div class="only-2d">
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Pixel brightness cutoff for detecting edges">Threshold</span>
+                <span class="setting-value" id="threshold-val">128</span>
+              </div>
+              <input type="range" id="threshold" min="10" max="245" value="128" step="1" aria-label="Threshold" />
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Higher = fewer points, simpler shapes">Detail Level (ε)</span>
+                <span class="setting-value" id="detail-val">0.0020</span>
+              </div>
+              <input type="range" id="detail" min="1" max="100" value="20" step="1" aria-label="Detail level" />
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Gaussian blur to reduce noise before processing">Blur Radius</span>
+                <span class="setting-value" id="blur-val">3</span>
+              </div>
+              <input type="range" id="blur-radius" min="1" max="21" value="3" step="2" aria-label="Blur radius" />
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Scale factor applied to all coordinates">Coordinate Scale</span>
+                <span class="setting-value" id="scale-val">1.00x</span>
+              </div>
+              <input type="range" id="scale" min="0.1" max="10" value="1" step="0.1" aria-label="Coordinate scale" />
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">Layer Mode</div>
+              <select id="layer-mode" aria-label="Layer mode">
+                <option value="hierarchy">Hierarchy (multi-layer)</option>
+                <option value="single">Single layer</option>
+              </select>
+            </div>
+
+            <div class="toggle-row">
+              <span class="toggle-label" data-tip="Use Canny edge detector instead of threshold">Use Canny Edge Detection</span>
+              <label class="toggle">
+                <input type="checkbox" id="use-canny" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <span class="toggle-label" data-tip="Invert image colours before processing">Invert Image</span>
+              <label class="toggle">
+                <input type="checkbox" id="invert" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+          </div><!-- /only-2d -->
+
+          <!-- ══ 3D SETTINGS ══════════════════════════ -->
+          <div class="only-3d">
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Spacing between grid points in X and Y">XY Grid Spacing</span>
+                <span class="setting-value" id="scale-xy-val">1.00</span>
+              </div>
+              <input type="range" id="scale-xy" min="0.1" max="10" value="1" step="0.1" aria-label="XY scale" />
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Maximum height of the 3D surface">Max Z Height</span>
+                <span class="setting-value" id="scale-z-val">50.0</span>
+              </div>
+              <input type="range" id="scale-z" min="5" max="500" value="50" step="5" aria-label="Z height scale" />
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Reduce image to this resolution before meshing">Mesh Resolution</span>
+                <span class="setting-value" id="resolution-val">128px</span>
+              </div>
+              <input type="range" id="resolution" min="16" max="256" value="128" step="16" aria-label="Resolution" />
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">Output Type</div>
+              <select id="output-type" aria-label="3D output type">
+                <option value="mesh" selected>3D Mesh (MESH entity)</option>
+                <option value="pointcloud">Point Cloud</option>
+                <option value="contours">Contour Lines</option>
+                <option value="all">All (Mesh + Points + Contours)</option>
+              </select>
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Number of Z-level slices for contour lines">Contour Levels</span>
+                <span class="setting-value" id="contour-levels-val">10</span>
+              </div>
+              <input type="range" id="contour-levels" min="3" max="30" value="10" step="1" aria-label="Contour levels" />
+            </div>
+
+            <div class="setting-group">
+              <div class="setting-label">
+                <span data-tip="Pre-smoothing blur for depth map">Blur Radius</span>
+                <span class="setting-value" id="blur-val-3d" style="display:none">—</span>
+              </div>
+              <!-- reuse blur-radius slider hidden; handled by 2d side -->
+            </div>
+
+            <div class="toggle-row">
+              <span class="toggle-label" data-tip="Flip depth: dark = near, bright = far">Invert Depth</span>
+              <label class="toggle">
+                <input type="checkbox" id="invert-3d" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+          </div><!-- /only-3d -->
+
+          <!-- How to Use hint -->
+          <div style="margin-top:24px; padding:14px; background:rgba(124,77,255,0.07); border:1px solid rgba(124,77,255,0.2); border-radius:10px;">
+            <div style="font-size:0.78rem; color:#9090b8; line-height:1.6;">
+              <strong style="color:#c0a0ff; display:block; margin-bottom:6px;">💡 Tips</strong>
+              <b>2D:</b> Works best on high-contrast logos, line art, schematics, and technical drawings.<br/><br/>
+              <b>3D:</b> Use a grayscale <em>depth map</em> — brighter pixels = higher elevation. NASA terrain maps and 3D renders both work great.
+            </div>
+          </div>
+
+        </div><!-- /settings-scroll -->
+      </div><!-- /settings-panel card -->
+
+    </div><!-- /main-grid -->
+
+  </div><!-- /app-wrapper -->
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
