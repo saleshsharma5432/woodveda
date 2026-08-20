@@ -10,9 +10,6 @@ const productsData = {
     category: "Anime Wall Decor & Statement Mirror",
     dimensions: "18 INCH (L) x 18 INCH (W) / 45.7cm x 45.7cm",
     material: "High-Grade Shatterproof Acrylic Mirror & Laser-Cut Black Frame",
-    price: "₹840",
-    originalPrice: "₹2,899",
-    discount: "Save 71%",
     rating: "4.8 ★ (120+ Verified Flipkart Reviews)",
     image: "assets/images/anime_swirl_mirror.jpg",
     secondaryImage: "assets/images/anime_swirl_mirror.jpg",
@@ -26,9 +23,6 @@ const productsData = {
     category: "Nature & Zen Wall Decor",
     dimensions: "24 INCH (L) x 20 INCH (W) / 61cm x 50.8cm",
     material: "Black Acrylic Silhouette & Bronze Reflective Acrylic Leaf Clusters",
-    price: "₹680",
-    originalPrice: "₹2,999",
-    discount: "Save 77%",
     rating: "4.9 ★ (150+ Verified Flipkart Reviews)",
     image: "assets/images/bonsai_tree.jpg",
     secondaryImage: "assets/images/bonsai_tree.jpg",
@@ -42,9 +36,6 @@ const productsData = {
     category: "Anime & Pop Culture Wall Art",
     dimensions: "18 INCH (L) x 18 INCH (W)",
     material: "Precision CNC Laser Cut Black Metal & Matte Finish Accent",
-    price: "₹899",
-    originalPrice: "₹2,499",
-    discount: "Save 64%",
     rating: "4.9 ★ (110+ Verified Flipkart Reviews)",
     image: "assets/images/luffy_wall_art.jpg",
     secondaryImage: "assets/images/luffy_wall_art.jpg",
@@ -58,9 +49,6 @@ const productsData = {
     category: "Nature & Wildlife Wall Decor",
     dimensions: "20 INCH (L) x 20 INCH (W)",
     material: "Handcrafted Layered Black Wood/Acrylic Silhouette",
-    price: "₹799",
-    originalPrice: "₹2,299",
-    discount: "Save 65%",
     rating: "4.8 ★ (95+ Verified Flipkart Reviews)",
     image: "assets/images/elephant_family_art.jpg",
     secondaryImage: "assets/images/elephant_family_art.jpg",
@@ -74,9 +62,6 @@ const productsData = {
     category: "Anime & Pop Culture Wall Art",
     dimensions: "18 INCH (L) x 18 INCH (W)",
     material: "Laser Cut Black Acrylic & Metallic Accent Backdrop",
-    price: "₹840",
-    originalPrice: "₹2,499",
-    discount: "Save 66%",
     rating: "4.9 ★ (140+ Verified Flipkart Reviews)",
     image: "assets/images/zoro_roronoa_art.jpg",
     secondaryImage: "assets/images/zoro_roronoa_art.jpg",
@@ -90,9 +75,6 @@ const productsData = {
     category: "Anime & Pop Culture Wall Art",
     dimensions: "20 INCH (L) x 16 INCH (W)",
     material: "High-Grade CNC Cut Acrylic Wall Sculpture",
-    price: "₹840",
-    originalPrice: "₹2,399",
-    discount: "Save 65%",
     rating: "4.8 ★ (88+ Verified Flipkart Reviews)",
     image: "assets/images/zoro_swordsman_art.jpg",
     secondaryImage: "assets/images/zoro_swordsman_art.jpg",
@@ -170,9 +152,6 @@ function initQuickViewModal() {
   const modalImg = document.getElementById("modalImg");
   const modalTitle = document.getElementById("modalTitle");
   const modalCategory = document.getElementById("modalCategory");
-  const modalPrice = document.getElementById("modalPrice");
-  const modalOriginalPrice = document.getElementById("modalOriginalPrice");
-  const modalDiscount = document.getElementById("modalDiscount");
   const modalRating = document.getElementById("modalRating");
   const modalDimensions = document.getElementById("modalDimensions");
   const modalMaterial = document.getElementById("modalMaterial");
@@ -189,9 +168,6 @@ function initQuickViewModal() {
       modalImg.src = item.image;
       modalTitle.textContent = item.title;
       modalCategory.textContent = item.category;
-      modalPrice.textContent = item.price;
-      modalOriginalPrice.textContent = item.originalPrice;
-      modalDiscount.textContent = item.discount;
       modalRating.textContent = item.rating;
       modalDimensions.textContent = item.dimensions;
       modalMaterial.textContent = item.material;
